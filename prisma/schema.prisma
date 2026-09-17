@@ -7,18 +7,98 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Class {
-  id       Int       @id @default(autoincrement())
-  name     String    @unique
-  students Student[]
+enum UserRole{
+  ADMIN
+  STUDENT
+  INSTRUCTOR
+  PARENT
 }
 
-model Student {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  firstName String
-  lastName  String
-  classId   Int?
-  class     Class?   @relation(fields: [classId], references: [id])
+model User {
+  id       String      @id @default(uuid())
+  firstName   String      
+  lastName   String?
+  passwordHash String
+  email      String          @unique
+  role       UserRole        @default(STUDENT)
+  isActive   Boolean         @default(true)
+  passwordChangeRequired Boolean @default(true)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  refreshTokens  refreshToken[]
+
+}
+
+model RefreshToken {
+  id        String     @id @default(uuid())
+  token     String
+  userId    String
+  user      User     @relation(fields:[userId],references:[id],onDelete:Cascade)
+  expiresAt DateTime
+  isRevoked Boolean   @default(false)
+  createdAt DateTime @default(now())
+}
+
+model StudentInfo {
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gpa          Float    @default(0.0)
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+  parentId     String?
+  parent       ParentInfo? @relation(fields: [parentId], references: [userId],onDelete:SetNull)
+  enrollments  Enrollment[]
+}
+
+
+model InstructorInfo {
+  userId       String   @id
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  departmentId String
+  department   Department @relation(fields: [departmentId], references: [id])
+  courses      Course[]
+}
+
+//instrutcor and courses many to many?
+
+model ParentInfo {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  children  StudentInfo[]
+}
+
+model Department{
+  id   String   @id @default(@uuid())
+  name  String  @unique
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  instructors   InstructorInfo[]
+  courses       Course[]
+  students      StudentInfo[]
+
+}
+
+model Course {
+  id            String   @id @default(uuid())
+  name          String
+  totalSeats    Int
+  creditHours   Int
+  departmentId  String
+  department    Department @relation(fields: [departmentId], references: [id])
+  instructorId  String
+  instructor    InstructorInfo @relation(fields: [instructorId], references: [userId],onDelete:SetNull)
+  enrollments   Enrollment[]
+}
+
+model Enrollment{
+  id    String    @id @default(uuid())
+  studentId  String
+  student  Student  relation(field:[studentId],references:[id])
+  courseId String
+  course  Course    relation(field:[courseId],references:[id])
+  grade  String?
+  enrolledAt DateTime @default(now())
+  @unique(studentId,courseId)
 }
