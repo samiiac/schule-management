@@ -24,13 +24,16 @@ export const createUserSchema = z.discriminatedUnion("role", [
   }),
 ]);
 
-
 export const loginSchema = z.object({
   email: z.email(),
-  password: z.string().min(1)
-})
+  password: z.string().min(1),
+});
 
 export const changePasswordSchema = z.object({
-  currentPassword:z.string().min(1),
-  newPassword:z.string().min(1)
-})
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(1),
+});
+
+export const refreshTokenSchema = z.object({
+  refreshToken: z.string().min(1),
+});

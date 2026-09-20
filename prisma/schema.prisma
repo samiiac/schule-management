@@ -41,6 +41,7 @@ model RefreshToken {
 }
 
 model StudentInfo {
+  userId       String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   gpa          Float    @default(0.0)
   departmentId String

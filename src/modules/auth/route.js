@@ -1,7 +1,8 @@
-// import Router from express
+import Router from express
+import { authController } from "./controller";
+export const authRouter = Router();
 
-// export const authRouter = Router();
-
-// authRouter.post("/register") //authorize only admin can do this
-// authRouter.post("/login") // password change required for first login 
-// authRouter.post("/change-password")
+authRouter.post("/register",authController.register);
+authRouter.post("/login",authController.login) ;
+authRouter.post("/change-password",authController.changePassword);
+authRouter.post("/refresh",authController.refresh);

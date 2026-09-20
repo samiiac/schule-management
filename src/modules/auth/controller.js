@@ -16,5 +16,9 @@ export const authController = {
   changePassword:async (req,res)=>{
     const payload = changePasswordSchema.parse(req.body);
    await authService.changePassword({user:req.user,payload})
+  },
+  refresh:async(req,res)=>{
+    const payload = changePasswordSchema.parse(req.body);
+    await authService.createNewTokens(payload)
   }
 };

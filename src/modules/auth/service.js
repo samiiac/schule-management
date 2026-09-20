@@ -5,6 +5,7 @@ import {
   createRefreshTokenHash,
   createRefreshTokenJwt,
   refreshTokenExpiresAt,
+  verifyRefreshTokenJwt,
 } from "../../utils/token.js";
 
 async function issueTokenPair({ id, role, passwordChangeRequired }) {
@@ -41,21 +42,13 @@ export const authService = {
     }
     const passwordHash = await hashPassword(payload.password);
     return await authRepository.createNewUser({
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      email: payload.email,
-      role: payload.role,
-      passwordHash,
+      ...payload,
+      password: passwordHash,
     });
-
-    //create user
-    //issuetokenpair?
-
-    //return user and tokenpayload
   },
-  login: async ({ user }) => {
+  login: async ({ email, password }) => {
     const existingUser = await authRepository.findUserByEmail(
-      user.email.toLowerCase(),
+      email.toLowerCase(),
     );
     if (
       !existingUser ||
@@ -78,7 +71,7 @@ export const authService = {
         email: existingUser.email,
         role: existingUser.role,
       },
-      tokenpayload,
+      ...tokenpayload,
     };
   },
   changePassword: async ({ user, payload }) => {
@@ -97,6 +90,8 @@ export const authService = {
       user.id,
       newPasswordHash,
     );
+    
+    await authRepository.revokeAllRefreshTokens(user.id);
 
     const tokenpayload = await issueTokenPair({
       id: user.id,
@@ -107,12 +102,46 @@ export const authService = {
     return {
       user: {
         id: updatedUser.id,
-        firstName: updatedUser.lastName,
+        firstName: updatedUser.firstName,
         lastName: updatedUser.lastName,
         email: updatedUser.email,
         role: updatedUser.role,
       },
       tokenpayload,
     };
+  },
+  createNewTokens: async ({ refreshToken }) => {
+    const payload = verifyRefreshTokenJwt(refreshToken);
+
+    if (payload == null) {
+      throw unauthorized("The token is not valid.");
+    }
+
+    const hashedToken = createRefreshTokenHash(payload.token);
+
+    const storedToken = await authRepository.findRefreshToken(hashedToken);
+
+    if (!storedToken || storedToken.isRevoked) {
+      throw unauthorized("The token is not valid.");
+    }
+
+    if (storedToken.expiresAt < new Date()) {
+      throw unauthorized("The token is expired.");
+    }
+
+    if (!storedToken.user.isActive) {
+      await authRepository.revokeRefreshToken(hashedToken);
+      throw unauthorized("The user is inactive");
+    }
+
+    await authRepository.revokeRefreshToken(hashedToken);
+
+    const tokenPayload = await issueTokenPair({
+      id: payload.id,
+      role: payload.role,
+      passwordChangeRequired: payload.passwordChangeRequired,
+    });
+
+    return { user: storedToken.user, ...tokenPayload };
   },
 };

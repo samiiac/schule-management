@@ -16,6 +16,28 @@ export function createAccessToken({ id, role, passwordChangeRequired }) {
   return { token, acsessExpiresIn: env.ACCESS_TOKEN_EXPIRES_IN_SECS };
 }
 
+export function verifyAccessToken(token) {
+  try {
+    const payload = jwt.verify(token, env.ACCESS_JWT_SECRET, {
+      algorithms: ["HS256"],
+    });
+
+    if (typeof payload == "string") {
+      return null;
+    }
+
+    if (payload.type !== "access") {
+      return null;
+    }
+    if (!payload.id || !payload.role){
+      return null;
+    }
+    return payload
+  } catch (error) {
+    return null;
+  }
+}
+
 export const createRawRefreshToken = () =>
   randomBytes(48).toString("base64url");
 
@@ -40,6 +62,26 @@ export function createRefreshTokenJwt({
     refreshTokenJwt: signedToken,
     refreshExpiresIn: env.REFRESH_TOKEN_EXPIRES_IN_SECS,
   };
+}
+
+export function verifyRefreshTokenJwt(token){
+ try{
+  const payload = jwt.verify(token,env.REFRESH_JWT_SECRET,{
+    algorithms:['HS256']
+  })
+  if(typeof payload == 'string'){
+     return null
+  }
+  if(payload.type != 'refresh'){
+    return null
+  }
+  if(!payload.id || !payload.role){
+    return null
+  }
+  return payload
+ }catch(error){
+  return null
+ }
 }
 
 export const createRefreshTokenHash = (rawToken) =>

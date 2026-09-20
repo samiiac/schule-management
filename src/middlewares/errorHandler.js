@@ -29,7 +29,7 @@ const prismaError = {
     message: "The requested record was not found.",
   },
 };
-export function errorHandler(error) {
+export function errorHandler(error,req,res,next) {
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
       success: false,
