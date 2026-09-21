@@ -51,9 +51,7 @@ export const authRepository = {
               },
               parentId: true,
             },
-            include: {
-              enrollments: true,
-            },
+           
           });
           break;
         case "INSTRUCTOR":

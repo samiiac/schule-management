@@ -1,10 +1,6 @@
-datasource db {
-  provider = "postgresql"
-  url      = "" 
-}
-
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"            
+  output   = "../src/generated/prisma"  
 }
 
 enum UserRole{
@@ -26,7 +22,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  refreshTokens  refreshToken[]
+  refreshTokens  RefreshToken[]
 
 }
 
@@ -69,7 +65,7 @@ model ParentInfo {
 }
 
 model Department{
-  id   String   @id @default(@uuid())
+  id   String   @id @default(uuid())
   name  String  @unique
   
   createdAt   DateTime  @default(now())
@@ -78,7 +74,6 @@ model Department{
   instructors   InstructorInfo[]
   courses       Course[]
   students      StudentInfo[]
-
 }
 
 model Course {
@@ -96,10 +91,10 @@ model Course {
 model Enrollment{
   id    String    @id @default(uuid())
   studentId  String
-  student  Student  relation(field:[studentId],references:[id])
+  studentInfo    StudentInfo  @relation(fields:[studentId],references:[userId])
   courseId String
-  course  Course    relation(field:[courseId],references:[id])
+  course  Course    @relation(fields:[courseId],references:[id])
   grade  String?
   enrolledAt DateTime @default(now())
-  @unique(studentId,courseId)
-}
+  @@unique([studentId,courseId])
+} 

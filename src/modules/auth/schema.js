@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { UserRole } from "@prisma/client";
 
+
+
 const baseUserSchema = z.object({
   firstName: z.string().min(1),
   lastName: z.string().optional(),
