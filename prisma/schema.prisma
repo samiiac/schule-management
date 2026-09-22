@@ -82,6 +82,7 @@ model Course {
   totalSeats    Int
   creditHours   Int
   departmentId  String
+  isActive      Boolean   @default(true)
   department    Department @relation(fields: [departmentId], references: [id])
   instructorId  String
   instructor    InstructorInfo @relation(fields: [instructorId], references: [userId],onDelete:SetNull)

@@ -19,28 +19,64 @@ export const departmentRepository = {
       prisma.department.findMany({
         where,
         ...getPagination(input),
-        include: {
-          instructors: {
-            select: {
-              userId: true,
-              user: {
-                select: {
-                  firstName: true,
-                  lastName: true,
-                  email: true,
-                },
-              },
-            },
-          },
-          courses: {
-            select: {
-              id: true,
-              name: true,
-              totalSeats: true,
-            },
+        _count: {
+          select: {
+            instructors: true,
+            courses: true,
+            students: true,
           },
         },
       }),
     ]);
+  },
+  update: (id, name) => {
+    return prisma.department.update({
+      where: { id },
+      data: {
+        name,
+      },
+    });
+  },
+  delete: (id) => {
+    return prisma.department.delete({ where: { id } });
+  },
+  getDepartmentDetails: (id) => {
+    return prisma.department.findUnique({
+      where: { id },
+      include: {
+        instructors: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+        courses: {
+          select: {
+            id: true,
+            name: true,
+            totalSeats: true,
+            creditHours: true,
+          },
+        },
+        students: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
   },
 };

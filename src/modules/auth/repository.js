@@ -41,17 +41,6 @@ export const authRepository = {
               userId: newUser.id,
               departmentId,
             },
-            select: {
-              userId: true,
-              department: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-              parentId: true,
-            },
-           
           });
           break;
         case "INSTRUCTOR":
@@ -59,15 +48,6 @@ export const authRepository = {
             data: {
               userId: newUser.id,
               departmentId,
-            },
-            select: {
-              userId: true,
-              department: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
             },
           });
           break;
