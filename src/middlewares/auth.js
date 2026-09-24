@@ -1,4 +1,5 @@
 import { verifyAccessToken } from "../utils/token"
+import { unauthorized } from "../utils/appError"
 
 async function authenticate(req,res,next){
     try{

@@ -7,6 +7,7 @@ import {
   refreshTokenExpiresAt,
   verifyRefreshTokenJwt,
 } from "../../utils/token.js";
+import { duplicateContent,unauthorized } from "../../utils/appError.js";
 
 async function issueTokenPair({ id, role, passwordChangeRequired }) {
   const { token, accessExpiresIn } = createAccessToken({ id, role, password });

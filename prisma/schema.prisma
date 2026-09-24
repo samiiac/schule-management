@@ -70,6 +70,8 @@ model Department{
   
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+  
+  isActive   Boolean   @default(true)
 
   instructors   InstructorInfo[]
   courses       Course[]
@@ -78,13 +80,13 @@ model Department{
 
 model Course {
   id            String   @id @default(uuid())
-  name          String
+  name          String   
   totalSeats    Int
   creditHours   Int
   departmentId  String
   isActive      Boolean   @default(true)
   department    Department @relation(fields: [departmentId], references: [id])
-  instructorId  String
+  instructorId  String?
   instructor    InstructorInfo @relation(fields: [instructorId], references: [userId],onDelete:SetNull)
   enrollments   Enrollment[]
 }

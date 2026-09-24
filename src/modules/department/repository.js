@@ -1,5 +1,5 @@
-import { prisma } from "../../prisma/client";
-import { getPagination } from "../../utils/pagination";
+import { prisma } from "../../prisma/client.js";
+import { getPagination } from "../../utils/pagination.js";
 
 export const departmentRepository = {
   create: (name) => {
@@ -9,6 +9,7 @@ export const departmentRepository = {
   },
   list: (input) => {
     const where = {
+      ...(input.includeInActive ? {} : { isActive: true }),
       ...(input.search
         ? { name: { contains: input.search, mode: "insensitive" } }
         : {}),
@@ -37,7 +38,21 @@ export const departmentRepository = {
       },
     });
   },
-  delete: (id) => {
+  delete: async (id) => {
+    const [instructors, students, courses] = await prisma.$transaction([
+      prisma.instructorInfo.count({ where: { departmentId: id } }),
+      prisma.studentInfo.count({ where: { departmentId: id } }),
+      prisma.course.count({ where: { departmentId: id } }),
+    ]);
+
+    if (instructors > 0 || students > 0 || courses > 0) {
+      return prisma.department.update({
+        where: { id },
+        data: {
+          isActive: false,
+        },
+      });
+    }
     return prisma.department.delete({ where: { id } });
   },
   getDepartmentDetails: (id) => {

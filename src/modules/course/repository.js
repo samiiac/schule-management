@@ -14,7 +14,7 @@ export const courseRepository = {
   },
   list: (input) => {
     const where = {
-      ...(input.isActive ? { isActive: true } : {}),
+      ...(input.includeInactive ? {} : { isActive: true }),
       ...(input.search
         ? { name: { contains: search, mode: "insensitive" } }
         : {}),
@@ -71,5 +71,11 @@ export const courseRepository = {
       return prisma.course.update({ where: { id }, data: { isActive: false } });
     }
     return prisma.course.delete({ where: { id } });
+  },
+  updateCourse: (id, input) => {
+    return prisma.course.update({ where: { id }, data: { input } });
+  },
+  getTotalEnrollments: (id) => {
+    return prisma.enrollments.count({ where: { courseId: id } });
   },
 };

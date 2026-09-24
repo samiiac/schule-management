@@ -1,5 +1,5 @@
-import { getPaginationMeta } from "../../utils/pagination";
-import { departmentRepository } from "./repository";
+import { getPaginationMeta } from "../../utils/pagination.js";
+import { departmentRepository } from "./repository.js";
 
 export const departmentService = {
   create: async (name) => {
