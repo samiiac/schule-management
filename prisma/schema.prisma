@@ -76,6 +76,7 @@ model Department{
   instructors   InstructorInfo[]
   courses       Course[]
   students      StudentInfo[]
+  enrollments   Enrollment[]
 }
 
 model Course {
@@ -97,6 +98,8 @@ model Enrollment{
   studentInfo    StudentInfo  @relation(fields:[studentId],references:[userId])
   courseId String
   course  Course    @relation(fields:[courseId],references:[id])
+  departmentId String
+  department Department  @relation(fields:[departmentId],references:[id])
   grade  String?
   enrolledAt DateTime @default(now())
   @@unique([studentId,courseId])

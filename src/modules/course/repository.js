@@ -78,4 +78,7 @@ export const courseRepository = {
   getTotalEnrollments: (id) => {
     return prisma.enrollments.count({ where: { courseId: id } });
   },
+  getCourseInfo:(courseId)=>{
+    return prisma.courses.findUnique({where:{courseId},select:{name:true,totalSeats:true,isActive:true}})
+  }
 };
