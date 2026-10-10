@@ -84,6 +84,7 @@ model Course {
   name          String   
   totalSeats    Int
   creditHours   Int
+  enrolledCount Int       @default(0)
   departmentId  String
   isActive      Boolean   @default(true)
   department    Department @relation(fields: [departmentId], references: [id])
@@ -98,8 +99,6 @@ model Enrollment{
   studentInfo    StudentInfo  @relation(fields:[studentId],references:[userId])
   courseId String
   course  Course    @relation(fields:[courseId],references:[id])
-  departmentId String
-  department Department  @relation(fields:[departmentId],references:[id])
   grade  String?
   enrolledAt DateTime @default(now())
   @@unique([studentId,courseId])

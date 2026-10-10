@@ -1,23 +1,15 @@
 import { getPagination } from "../../utils/pagination";
 
-const where = {
-  ...(input.courseId ? { courseId } : {}),
-  ...(input.studentId ? { studentId } : {}),
-  ...(input.grade ? { grade } : {}),
-  ...(input.departmentId ? { departmentId } : {}),
-};
-
 export const enrollmentRepository = {
-  create: async (studentId, courseId) => {
-   
-    return prisma.enrollments.create({
-      data: {
-        studentId,
-        courseId,
-      },
-    });
-  }, //check totalseats and enrollments
+  create: async (tx, studentId, courseId) => {
+    return tx.enrollment.create({ data: { studentId, courseId } });
+  },
   listAll: async (input) => {
+    const where = {
+      ...(input.courseId ? { courseId: input.courseId } : {}),
+      ...(input.studentId ? { studentId: input.studentId } : {}),
+      ...(input.grade ? { grade: input.grade } : {}),
+    };
     const [count, rows] = await prisma.$transaction([
       prisma.enrollments.count({ where }),
       prisma.enrollments.findMany({
@@ -42,21 +34,21 @@ export const enrollmentRepository = {
               },
             },
           },
-          department: {
-            select: {
-              name: true,
-            },
-          },
         },
       }),
     ]);
     return { count, rows };
   },
-  listForCourse: async (courseId, input) => {
+  listForIns: async (courseId, input) => {
+    const where = {
+      courseId,
+      ...(input.grade ? { grade: input.grade } : {}),
+    };
+
     const [count, rows] = await prisma.$transaction([
       prisma.enrollments.count({ where: { courseId } }),
       prisma.enrollments.findMany({
-        where: { courseId },
+        where,
         ...getPagination(input),
         select: {
           include: {
@@ -77,6 +69,10 @@ export const enrollmentRepository = {
     return { count, rows };
   },
   listForStudent: (studentId) => {
+    const where = {
+      studentId,
+      ...(input.grade ? { grade: input.grade } : {}),
+    };
     return prisma.enrollments.findMany({
       where: { studentId },
       select: {
@@ -98,5 +94,6 @@ export const enrollmentRepository = {
         },
       },
     });
-  },//filters for list endpoint of student and ins
+  },
+  //delete and update
 };

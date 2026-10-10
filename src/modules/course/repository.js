@@ -16,7 +16,7 @@ export const courseRepository = {
     const where = {
       ...(input.includeInactive ? {} : { isActive: true }),
       ...(input.search
-        ? { name: { contains: search, mode: "insensitive" } }
+        ? { name: { contains: input.search, mode: "insensitive" } }
         : {}),
     };
 
@@ -78,7 +78,15 @@ export const courseRepository = {
   getTotalEnrollments: (id) => {
     return prisma.enrollments.count({ where: { courseId: id } });
   },
-  getCourseInfo:(courseId)=>{
-    return prisma.courses.findUnique({where:{courseId},select:{name:true,totalSeats:true,isActive:true}})
-  }
+  getCourseInfo: (tx,courseId) => {
+    return tx.courses.findUnique({
+      where: { courseId },
+      select: { name: true, totalSeats: true, isActive: true },
+    });
+  },
+   reserveSeat: (tx,courseId,totalSeats) => tx.course.updateMany({
+      where: { id: courseId, enrolledCount: { lt: totalSeats } },
+      data: { enrolledCount: { increment: 1 } },
+    }),
+   
 };
