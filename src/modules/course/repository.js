@@ -78,15 +78,21 @@ export const courseRepository = {
   getTotalEnrollments: (id) => {
     return prisma.enrollments.count({ where: { courseId: id } });
   },
-  getCourseInfo: (tx,courseId) => {
+  getCourseInfo: (tx, courseId) => {
     return tx.courses.findUnique({
       where: { courseId },
-      select: { name: true, totalSeats: true, isActive: true },
     });
   },
-   reserveSeat: (tx,courseId,totalSeats) => tx.course.updateMany({
+  reserveSeat: (tx, courseId, totalSeats) =>
+    tx.course.updateMany({
       where: { id: courseId, enrolledCount: { lt: totalSeats } },
       data: { enrolledCount: { increment: 1 } },
     }),
-   
+
+  releaseSeat: (tx, courseId) => {
+    return tx.course.updateMany({
+      where: { id: courseId, enrolledCount: { gt: 0 } },
+      data: { enrolledCount: { decrement: 1 } },
+    });
+  },
 };

@@ -7,7 +7,7 @@ export const departmentRepository = {
       data: { name },
     });
   },
-  list: (input) => {
+  list: async(input) => {
     const where = {
       ...(input.includeInActive ? {} : { isActive: true }),
       ...(input.search
@@ -15,7 +15,7 @@ export const departmentRepository = {
         : {}),
     };
 
-    return prisma.$transaction([
+    const [total,rows] = await prisma.$transaction([
       prisma.department.count({ where }),
       prisma.department.findMany({
         where,
@@ -29,6 +29,7 @@ export const departmentRepository = {
         },
       }),
     ]);
+    return [total,rows]
   },
   update: (id, name) => {
     return prisma.department.update({

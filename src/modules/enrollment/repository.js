@@ -1,3 +1,5 @@
+import { prisma } from "../../prisma/client";
+import { calculateGPA } from "../../utils/gpa";
 import { getPagination } from "../../utils/pagination";
 
 export const enrollmentRepository = {
@@ -37,7 +39,7 @@ export const enrollmentRepository = {
         },
       }),
     ]);
-    return { count, rows };
+    return [count, rows];
   },
   listForIns: async (courseId, input) => {
     const where = {
@@ -66,34 +68,74 @@ export const enrollmentRepository = {
         },
       }),
     ]);
-    return { count, rows };
+    return [count, rows];
   },
-  listForStudent: (studentId) => {
+  listForStudent: async (studentId, input) => {
     const where = {
       studentId,
       ...(input.grade ? { grade: input.grade } : {}),
     };
-    return prisma.enrollments.findMany({
-      where: { studentId },
-      select: {
-        include: {
-          course: {
-            select: {
-              name: true,
-              totalSeats: true,
-              creditHours: true,
-              isActive: true,
+    const [count, rows] = await prisma.$transaction([
+      prisma.enrollments.count({ where }),
+      prisma.enrollments.findMany({
+        where,
+        ...getPagination(input),
+        select: {
+          include: {
+            course: {
+              select: {
+                name: true,
+                totalSeats: true,
+                creditHours: true,
+                isActive: true,
+              },
+            },
+            department: {
+              select: {
+                name: true,
+                isActive: true,
+              },
             },
           },
-          department: {
-            select: {
-              name: true,
-              isActive: true,
-            },
+        },
+      }),
+    ]);
+    return [count, rows];
+  },
+  update: async (tx,enrollmentId, grade) => {
+    return prisma.enrollments.update({
+      where: { id: enrollmentId },
+      data: {
+        grade,
+      },
+    });
+  },
+  delete: (tx, id) => {
+    return tx.enrollments.delete({ where: { id } });
+  },
+  findEnrollmentById: (id) => {
+    return prisma.enrollments.findUnique({ where: { id } });
+  },
+
+  computeGPA:async (tx,studentId)=>{
+     const enrolls = await tx.enrollments.findMany({
+      where: { studentId, grade: { not: "UG" } },
+      include: {
+        course: {
+          select: {
+            creditHours: true,
           },
         },
       },
     });
-  },
-  //delete and update
+
+    const gpa = calculateGPA(enrolls);
+
+    return tx.studentInfo.updateMany({
+      where: { userId: studentId },
+      data:{
+        gpa
+      }
+    });
+  }
 };
