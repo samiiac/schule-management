@@ -35,3 +35,8 @@ export const rolePermissionsMap = {
 export const hasPermissions =  (role,reqPermission)=>{
     return rolePermissionsMap[role].includes(reqPermission);
 }
+
+//auth middlewares
+//tests
+//dockerization
+//ci cd workflows

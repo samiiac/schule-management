@@ -1,10 +1,26 @@
-import Router from 'express'
+import Router from "express";
+import { enrollmentController } from "./controller";
+export const enrollmentRoutes = Router();
 
-export const enrollmentRoutes = Router()
-
-enrollmentRoutes.post("/") //student or admin
-enrollmentRoutes.get("/all") //admin 
-enrollmentRoutes.get("/my") //student's enrolled course
-enrollmentRoutes.get("/courses/:courseId") //admin or ins
-enrollmentRoutes.patch("/:id") //by instructor (Once?)
-enrollmentRoutes.delete("/:id") //by student or admin?
+enrollmentRoutes.post(
+  "/",
+  requirePermission("enrollment:create:any", "enrollment:create:own"),
+  enrollmentController.create
+);
+enrollmentRoutes.get("/all", requirePermission("enrollment:read:any"),enrollmentController.listForAdmin);
+enrollmentRoutes.get("/my", requirePermission("enrollment:read:own"),enrollmentController.listForStudent);
+enrollmentRoutes.get(
+  "/courses/:courseId",
+  requirePermission("enrollment:read:taught", "enrollment:read:any"),
+  enrollmentController.listForIns
+);
+enrollmentRoutes.patch(
+  "/:id",
+  requirePermission("enrollment:update:taught", "enrollment:update:any"),
+  enrollmentController.update
+);
+enrollmentRoutes.delete(
+  "/:id",
+  requirePermission("enrollment:delete:own", "enrollment:delete:any"),
+  enrollmentController.delete
+);
