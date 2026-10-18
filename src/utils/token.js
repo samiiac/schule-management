@@ -9,7 +9,7 @@ export function createAccessToken({ id, role, passwordChangeRequired }) {
     passwordChangeRequired,
     type: "access",
   };
-  const token = jwt.sign({ payload }, env.ACCESS_JWT_SECRET, {
+  const token = jwt.sign( payload , env.ACCESS_JWT_SECRET, {
     algorithm: "HS256",
     expiresIn: env.ACCESS_TOKEN_EXPIRES_IN_SECS,
   });

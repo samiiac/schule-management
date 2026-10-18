@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client.js";
+
 import { getPaginationMeta } from "../../utils/pagination.js";
 import { courseRepository } from "./repository.js";
 import { badRequest } from "../../utils/appError.js";
@@ -8,7 +8,7 @@ async function validateInstructorInDept(id, departmentId) {
     return;
   }
 
-  const info = await prisma.instructorInfo.findMany({
+  const info = await prisma.instructorInfo.findFirst({
     where: { userId: id, departmentId },
     select: {
       userId: true,
@@ -39,7 +39,10 @@ export const courseService = {
     const [count, rows] = await courseRepository.list(input);
     return { data: rows, meta: getPaginationMeta(input, count) };
   },
-  delete: async (id) => {
+  listDetails:(id)=>{
+  return courseRepository.getCourseDetails(id)
+  },
+  delete:  (id) => {
     return courseRepository.delete(id);
   },
 };

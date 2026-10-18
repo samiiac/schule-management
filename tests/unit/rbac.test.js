@@ -1,4 +1,4 @@
-import { describe ,it,expect,toBe} from "vitest";
+import { describe, it, expect, toBe } from "vitest";
 import { hasPermissions } from "../../src/modules/rbac/service";
 
 describe("hasPermissions", () => {
@@ -9,8 +9,12 @@ describe("hasPermissions", () => {
   it("returns false when the role does not have it", () => {
     expect(hasPermissions("STUDENT", "enrollment:read:any")).toBe(false);
   });
-});
 
   it("returns false when the role does not have it", () => {
     expect(hasPermissions("ADMIN", "enrollment:read:own")).toBe(false);
   });
+
+  it("returns true when the role  has it", () => {
+    expect(hasPermissions("STUDENT", "enrollment:read:own")).toBe(true);
+  });
+});

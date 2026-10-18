@@ -3,7 +3,7 @@ import {z} from 'zod'
 
 
 export const createDepartmentSchema = z.object({
-    name:z.string.min(1)
+    name:z.string().min(1)
 })
 
 export const idParamsSchema = z.object({
@@ -11,7 +11,7 @@ export const idParamsSchema = z.object({
 })
 
 export const updateDepartmentSchema = z.object({
-    name:z.string.min(1)
+    name:z.string().min(1)
 })
 
 

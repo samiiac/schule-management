@@ -1,4 +1,4 @@
-import { prisma } from "../../prisma/client.js";
+import { prisma } from "../../generated/prisma/client.js";
 import { getPagination } from "../../utils/pagination.js";
 
 export const departmentRepository = {

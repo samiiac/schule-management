@@ -1,4 +1,4 @@
-import { createCourseSchema, listCourseSchema, updateCourseSchema } from "./schema.js";
+import { createCourseSchema, listSchema, updateCourseSchema } from "./schema.js";
 import { idParamsSchema } from "../department/schema.js";
 import { courseService } from "./service.js";
 
@@ -9,7 +9,7 @@ export const courseController = {
         return res.status(201).json({ success: true, result });
     },
     list: async (req, res) => {
-        const input = listCourseSchema.parse(req.query);
+        const input = listSchema.parse(req.query);
         const result = await courseService.list(input);
         return res.status(200).json({ success: true, result });
     },
@@ -19,7 +19,7 @@ export const courseController = {
         return res.status(200).json({ success: true, result: course });
     },
     update: async (req, res) => {
-        const { id } = courseIdParamsSchema.parse(req.params);
+        const { id } = idParamsSchema.parse(req.params);
         const updateData = updateCourseSchema.parse(req.body);
         const result = await courseService.update(id, updateData);
         return res.status(200).json({ success: true, result });

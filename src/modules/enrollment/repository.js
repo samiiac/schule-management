@@ -1,6 +1,7 @@
-import { prisma } from "../../prisma/client";
+import { prisma } from "../../generated/prisma/client.js";
 import { calculateGPA } from "../../utils/gpa";
 import { getPagination } from "../../utils/pagination";
+
 
 export const enrollmentRepository = {
   create: async (tx, studentId, courseId) => {
@@ -76,33 +77,27 @@ export const enrollmentRepository = {
       ...(input.grade ? { grade: input.grade } : {}),
     };
     const [count, rows] = await prisma.$transaction([
-      prisma.enrollments.count({ where }),
-      prisma.enrollments.findMany({
+      prisma.enrollment.count({ where }),
+      prisma.enrollment.findMany({
         where,
         ...getPagination(input),
-        select: {
-          include: {
-            course: {
-              select: {
-                name: true,
-                totalSeats: true,
-                creditHours: true,
-                isActive: true,
-              },
-            },
-            department: {
-              select: {
-                name: true,
-                isActive: true,
-              },
+
+        include: {
+          course: {
+            select: {
+              name: true,
+              totalSeats: true,
+              creditHours: true,
+              isActive: true,
             },
           },
+         
         },
       }),
     ]);
     return [count, rows];
   },
-  update: async (tx,enrollmentId, grade) => {
+  update: async (tx, enrollmentId, grade) => {
     return prisma.enrollments.update({
       where: { id: enrollmentId },
       data: {
@@ -117,8 +112,8 @@ export const enrollmentRepository = {
     return prisma.enrollments.findUnique({ where: { id } });
   },
 
-  computeGPA:async (tx,studentId)=>{
-     const enrolls = await tx.enrollments.findMany({
+  computeGPA: async (tx, studentId) => {
+    const enrolls = await tx.enrollments.findMany({
       where: { studentId, grade: { not: "UG" } },
       include: {
         course: {
@@ -133,9 +128,9 @@ export const enrollmentRepository = {
 
     return tx.studentInfo.updateMany({
       where: { userId: studentId },
-      data:{
-        gpa
-      }
+      data: {
+        gpa,
+      },
     });
-  }
+  },
 };

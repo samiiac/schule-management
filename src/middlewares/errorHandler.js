@@ -1,6 +1,8 @@
 import { PrismaClientInitializationError } from "@prisma/client/runtime/client";
 import { AppError } from "../utils/appError.js";
+import { ZodError } from "zod";
 import {
+
   PrismaClientKnownRequestError,
   PrismaClientRustError,
   PrismaClientRustPanicError,
@@ -30,6 +32,8 @@ const prismaError = {
   },
 };
 export function errorHandler(error,req,res,next) {
+
+   
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
       success: false,
@@ -40,7 +44,7 @@ export function errorHandler(error,req,res,next) {
   }
 
   if (error instanceof ZodError) {
-    return res.status(error.statusCode).json({
+    return res.status(400).json({
       success: false,
       code: "VALIDATION_ERROR",
       message: "Validation failed",

@@ -27,8 +27,11 @@ export function authenticate(req, res, next) {
 export function requirePermission(permissions) {
   return (req, res, next) => {
     try {
+      if(!req.user){
+        return unauthorized()
+      }
       const userRole = req.user.role;
-      const allowed = false;
+      let allowed = false;
       for (let p of permissions) {
         allowed |= hasPermissions(userRole, p);
       }
