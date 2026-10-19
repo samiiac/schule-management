@@ -1,6 +1,6 @@
 import Router from "express";
-import { courseController } from "./controller";
-import { authenticate,requirePermission } from "../../middlewares/auth";
+import { courseController } from "./controller.js";
+import { authenticate,requirePermission } from "../../middlewares/auth.js";
 
 export const courseRouter = Router();
 courseRouter.post("/",authenticate,requirePermission(["course:create:any"]),courseController.create)//admin

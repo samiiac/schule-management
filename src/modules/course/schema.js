@@ -1,5 +1,5 @@
 import {z} from 'zod'
-import { paginationSchema } from '../../utils/pagination';
+import { paginationSchema } from '../../utils/pagination.js';
 
 export const createCourseSchema = z.object({
   name: z.string().min(2, "Course name must be at least 2 characters long").max(150),
@@ -14,9 +14,6 @@ export const createCourseSchema = z.object({
   
 
 });
-
-
-
 
 export const updateCourseSchema = z.object({
   name: z.string().min(1).max(150),

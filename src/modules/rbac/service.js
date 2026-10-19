@@ -8,21 +8,23 @@ export const rolePermissionsMap = {
     "course:create:any",
     "course:update:any",
     "course:delete:any",
-    "deparment:read:any",
-    "deparment:create:any",
+    "department:read:any",
+    "department:create:any",
+    "department:update:any",
+    "department:delete:any",
   ],
   STUDENT: [
     "enrollment:read:own",
     "enrollment:create:own",
     "enrollment:delete:own",
     "course:read:any",
-    "deparment:read:any",
+    "department:read:any",
   ],
   INSTRUCTOR: [
     "enrollment:read:taught",
     "enrollment:update:taught",
     "course:read:any",
-    "deparment:read:any",
+    "department:read:any",
     
   ],
   PARENT: [

@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { UserRole } from "../../generated/prisma/client.js"
-
+import { UserRole } from "@prisma/client";
 
 
 const baseUserSchema = z.object({

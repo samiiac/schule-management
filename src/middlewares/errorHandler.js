@@ -32,7 +32,7 @@ const prismaError = {
   },
 };
 export function errorHandler(error,req,res,next) {
-
+ console.log("Unhandled error", error);
    
   if (error instanceof AppError) {
     return res.status(error.statusCode).json({
@@ -90,6 +90,7 @@ export function errorHandler(error,req,res,next) {
   }
 
   console.log("Unhandled error", error);
+
   return res.status(500).json({
     success: false,
     code: "SERVER_ERROR",

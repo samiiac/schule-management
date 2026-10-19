@@ -22,7 +22,7 @@ const student = createAccessToken({
 }).token;
 
 // safe id — if schema uses z.string().uuid(), a fake "d1" would 400
-const UUID = "00000000-0000-0000-0000-000000000001";
+const UUID = "11111111-1111-4411-8111-111111111111";
 
 describe("Departments — HTTP", () => {
   describe("POST /api/departments", () => {
@@ -30,6 +30,7 @@ describe("Departments — HTTP", () => {
       const res = await request(app)
         .post("/api/departments")
         .send({ name: "CS" });
+     
       expect(res.status).toBe(401);
     });
 
@@ -46,6 +47,7 @@ describe("Departments — HTTP", () => {
         .post("/api/departments")
         .set("Authorization", `Bearer ${admin}`)
         .send({ name: "CS" });
+        console.log(res.error)
       expect(res.status).toBe(201);
     });
   });
@@ -56,7 +58,9 @@ describe("Departments — HTTP", () => {
         .get("/api/departments")
         .set("Authorization", `Bearer ${student}`);
       expect(res.status).toBe(200);
+       console.log(res.error)
     });
+   
   });
 
   describe("PATCH /api/departments/:id", () => {

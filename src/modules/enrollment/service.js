@@ -1,7 +1,7 @@
-import { forbidden } from "../../utils/appError";
-import { getPaginationMeta } from "../../utils/pagination";
-import { courseRepository } from "../course/repository";
-import { enrollmentRepository } from "./repository";
+import { forbidden } from "../../utils/appError.js";
+import { getPaginationMeta } from "../../utils/pagination.js";
+import { courseRepository } from "../course/repository.js";
+import { enrollmentRepository } from "./repository.js";
 
 export const enrollmentService = {
   create: (studentId, courseId) => {

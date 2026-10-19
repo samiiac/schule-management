@@ -8,7 +8,7 @@ import { enrollmentRouter } from "./modules/enrollment/route.js";
 export const app = express();
 
 app.use(express.json())
-app.get("/health",()=>{
+app.get("/health",(req,res)=>{
     return res.status(200).json({message:"Server running."})
 })
 app.use("/api/auth",authRouter)

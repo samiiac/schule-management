@@ -1,4 +1,5 @@
-import { getPagination } from "../../utils/pagination";
+import { getPagination } from "../../utils/pagination.js";
+import {prisma} from "../../prisma/client.js";
 
 export const courseRepository = {
   create: (input) => {

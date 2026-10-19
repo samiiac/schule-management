@@ -4,7 +4,6 @@ import {
   updateEnrollmentSchema,
 } from "./schema.js";
 import { idParamsSchema } from "../department/schema.js";
-import { courseIdParamsSchema } from "../course/schema.js";
 import { enrollmentService } from "./service.js";
 import { badRequest } from "../../utils/appError.js";
 

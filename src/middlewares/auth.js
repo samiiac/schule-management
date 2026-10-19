@@ -1,6 +1,6 @@
-import { verifyAccessToken } from "../utils/token";
-import { forbidden, unauthorized } from "../utils/appError";
-import { hasPermissions } from "../modules/rbac/service";
+import { verifyAccessToken } from "../utils/token.js";
+import { forbidden, unauthorized } from "../utils/appError.js";
+import { hasPermissions } from "../modules/rbac/service.js";
 
 export function authenticate(req, res, next) {
   try {
@@ -27,9 +27,7 @@ export function authenticate(req, res, next) {
 export function requirePermission(permissions) {
   return (req, res, next) => {
     try {
-      if(!req.user){
-        return unauthorized()
-      }
+      
       const userRole = req.user.role;
       let allowed = false;
       for (let p of permissions) {

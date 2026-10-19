@@ -1,6 +1,6 @@
-import { prisma } from "../../generated/prisma/client.js";
-import { calculateGPA } from "../../utils/gpa";
-import { getPagination } from "../../utils/pagination";
+import {prisma} from "../../prisma/client.js";
+import { calculateGPA } from "../../utils/gpa.js";
+import { getPagination } from "../../utils/pagination.js";
 
 
 export const enrollmentRepository = {

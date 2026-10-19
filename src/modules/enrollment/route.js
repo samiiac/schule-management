@@ -1,6 +1,6 @@
 import Router from "express";
-import { enrollmentController } from "./controller";
-import { requirePermission, authenticate } from "../../middlewares/auth";
+import { enrollmentController } from "./controller.js";
+import { requirePermission, authenticate } from "../../middlewares/auth.js";
 export const enrollmentRouter = Router();
 
 enrollmentRouter.post(
