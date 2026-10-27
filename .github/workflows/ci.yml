@@ -1,6 +1,6 @@
 name: ci
 
-on: 
+on:
   push:
     branches: [main]
   pull_request:
@@ -8,28 +8,28 @@ on:
 
 jobs:
   test:
-   runs-on: ubuntu-latest
-   env:
-     NODE_ENV: test
-     DATABASE_URL: postgresql://ci:ci@localhost:5432/ci_test
-     ACCESS_JWT_SECRET: ci-only-not-real-aaaaaaaaaaaaaaaaaaaaaaaa
-     REFRESH_JWT_SECRET: ci-only-not-real-bbbbbbbbbbbbbbbbbbbbbbbb
-     ACCESS_TOKEN_EXPIRES_IN_SECS: "900"
-     REFRESH_TOKEN_EXPIRES_IN_SECS: "604800"
-     
-   steps:
-    - uses: actions/checkout@v4
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci_test
+      ACCESS_JWT_SECRET: ci-only-not-real-aaaaaaaaaaaaaaaaaaaaaaaa
+      REFRESH_JWT_SECRET: ci-only-not-real-bbbbbbbbbbbbbbbbbbbbbbbb
+      ACCESS_TOKEN_EXPIRES_IN_SECS: "900"
+      REFRESH_TOKEN_EXPIRES_IN_SECS: "604800"
 
-    - uses: actions/setup-node@v4
-      with: 
-       node-version: '24'
-       cache: 'npm'
+    steps:
+      - uses: actions/checkout@v5
 
-    - run: npm ci
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+          cache: "npm"
 
-    - run: npx prisma generate
+      - run: npm ci
 
-    - run: npx vitest run 
+      - run: npx prisma generate
 
+      - run: npx vitest run
 
-
+      - run: docker build -t schule-app .
