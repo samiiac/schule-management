@@ -2,7 +2,7 @@
 import { getPaginationMeta } from "../../utils/pagination.js";
 import { courseRepository } from "./repository.js";
 import { badRequest } from "../../utils/appError.js";
-
+import { prisma } from "../../prisma/client.js";
 async function validateInstructorInDept(id, departmentId) {
   if (id == null) {
     return;

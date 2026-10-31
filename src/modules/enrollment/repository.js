@@ -1,7 +1,6 @@
-import {prisma} from "../../prisma/client.js";
+import { prisma } from "../../prisma/client.js";
 import { calculateGPA } from "../../utils/gpa.js";
 import { getPagination } from "../../utils/pagination.js";
-
 
 export const enrollmentRepository = {
   create: async (tx, studentId, courseId) => {
@@ -14,8 +13,8 @@ export const enrollmentRepository = {
       ...(input.grade ? { grade: input.grade } : {}),
     };
     const [count, rows] = await prisma.$transaction([
-      prisma.enrollments.count({ where }),
-      prisma.enrollments.findMany({
+      prisma.enrollment.count({ where }),
+      prisma.enrollment.findMany({
         where,
         ...getPagination(input),
         include: {
@@ -49,20 +48,19 @@ export const enrollmentRepository = {
     };
 
     const [count, rows] = await prisma.$transaction([
-      prisma.enrollments.count({ where: { courseId } }),
-      prisma.enrollments.findMany({
+      prisma.enrollment.count({ where: { courseId } }),
+      prisma.enrollment.findMany({
         where,
         ...getPagination(input),
-        select: {
-          include: {
-            studentInfo: {
-              select: {
-                gpa: true,
-                user: {
-                  firstName: true,
-                  lastName: true,
-                  email: true,
-                },
+
+        include: {
+          studentInfo: {
+            select: {
+              gpa: true,
+              user: {
+                firstName: true,
+                lastName: true,
+                email: true,
               },
             },
           },
@@ -91,14 +89,13 @@ export const enrollmentRepository = {
               isActive: true,
             },
           },
-         
         },
       }),
     ]);
     return [count, rows];
   },
   update: async (tx, enrollmentId, grade) => {
-    return prisma.enrollments.update({
+    return prisma.enrollment.update({
       where: { id: enrollmentId },
       data: {
         grade,

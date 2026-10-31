@@ -74,13 +74,13 @@ export const courseRepository = {
     return prisma.course.delete({ where: { id } });
   },
   updateCourse: (id, input) => {
-    return prisma.course.update({ where: { id }, data: { input } });
+    return prisma.course.update({ where: { id }, data: { ...input } });
   },
   getTotalEnrollments: (id) => {
     return prisma.enrollments.count({ where: { courseId: id } });
   },
   getCourseInfo: (tx, courseId) => {
-    return tx.courses.findUnique({
+    return tx.course.findUnique({
       where: { courseId },
     });
   },

@@ -2,6 +2,7 @@ import { forbidden } from "../../utils/appError.js";
 import { getPaginationMeta } from "../../utils/pagination.js";
 import { courseRepository } from "../course/repository.js";
 import { enrollmentRepository } from "./repository.js";
+import {prisma} from "../../prisma/client.js";
 
 export const enrollmentService = {
   create: (studentId, courseId) => {
