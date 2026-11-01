@@ -106,8 +106,8 @@ export const authRepository = {
       data: { isRevoked: true },
     });
   },
-  changeUserPassword: async (userId, newPasswordHash) => {
-    return await prisma.user.update({
+  changeUserPassword: (userId, newPasswordHash) => {
+    return  prisma.user.update({
       where: { id: userId },
       data: { passwordHash: newPasswordHash, passwordChangeRequired: false },
       select: {

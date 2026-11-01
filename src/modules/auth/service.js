@@ -7,7 +7,7 @@ import {
   refreshTokenExpiresAt,
   verifyRefreshTokenJwt,
 } from "../../utils/token.js";
-import { duplicateContent,unauthorized } from "../../utils/appError.js";
+import { duplicateContent, unauthorized } from "../../utils/appError.js";
 
 async function issueTokenPair({ id, role, passwordChangeRequired }) {
   const { token, accessExpiresIn } = createAccessToken({ id, role, password });
@@ -91,7 +91,7 @@ export const authService = {
       user.id,
       newPasswordHash,
     );
-    
+
     await authRepository.revokeAllRefreshTokens(user.id);
 
     const tokenpayload = await issueTokenPair({
@@ -100,16 +100,7 @@ export const authService = {
       passwordChangeRequired: updatedUser.passwordChangeRequired,
     });
 
-    return {
-      user: {
-        id: updatedUser.id,
-        firstName: updatedUser.firstName,
-        lastName: updatedUser.lastName,
-        email: updatedUser.email,
-        role: updatedUser.role,
-      },
-      tokenpayload,
-    };
+    return tokenpayload;
   },
   createNewTokens: async ({ refreshToken }) => {
     const payload = verifyRefreshTokenJwt(refreshToken);
@@ -143,6 +134,6 @@ export const authService = {
       passwordChangeRequired: payload.passwordChangeRequired,
     });
 
-    return { user: storedToken.user, ...tokenPayload };
+    return tokenPayload;
   },
 };

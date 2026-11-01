@@ -40,3 +40,7 @@ export const rateLimited = (message = "Too many requests.", details = null) => {
 export const notFound = (message = "Content not found", details = null) => {
   return new AppError(message, 404, "NOT_FOUND", details);
 };
+
+export const changePassword = (message = "Change Password", details = null) => {
+  return new AppError(message, 403, "PASSWORD_CHANGE_REQUIRED", details);
+};
