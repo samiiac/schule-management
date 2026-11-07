@@ -1,5 +1,5 @@
 import rateLimit from "express-rate-limit";
-import { rateLimited } from "../utils/appError";
+import { rateLimited } from "../utils/appError.js";
 
 export const authLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
@@ -14,5 +14,5 @@ export const generalLimiter = rateLimit({
   limit: 12,
   standardHeaders: "draft-8",
   legacyHeaders: false,
-  handler:(error,req,res,next)=>next(new rateLimited())
+  handler:(req,res,next)=>next(new rateLimited())
 });

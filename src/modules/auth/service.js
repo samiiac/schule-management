@@ -6,11 +6,12 @@ import {
   createRefreshTokenJwt,
   refreshTokenExpiresAt,
   verifyRefreshTokenJwt,
+  createAccessToken
 } from "../../utils/token.js";
 import { duplicateContent, unauthorized } from "../../utils/appError.js";
 
 async function issueTokenPair({ id, role, passwordChangeRequired }) {
-  const { token, accessExpiresIn } = createAccessToken({ id, role, password });
+  const { token, accessExpiresIn } = createAccessToken({ id, role, passwordChangeRequired});
   const rawToken = createRawRefreshToken();
   const { refreshTokenJwt, refreshExpiresIn } = createRefreshTokenJwt({
     id,
@@ -54,7 +55,7 @@ export const authService = {
     if (
       !existingUser ||
       !existingUser.isActive ||
-      !(await verifyPassword(user.password, existingUser.passwordHash))
+      !(await verifyPassword(password, existingUser.passwordHash))
     ) {
       throw unauthorized("Invalid credentials.");
     }

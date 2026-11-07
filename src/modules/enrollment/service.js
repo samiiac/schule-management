@@ -2,7 +2,7 @@ import { forbidden } from "../../utils/appError.js";
 import { getPaginationMeta } from "../../utils/pagination.js";
 import { courseRepository } from "../course/repository.js";
 import { enrollmentRepository } from "./repository.js";
-import {prisma} from "../../prisma/client.js";
+import { prisma } from "../../prisma/client.js";
 
 export const enrollmentService = {
   create: (studentId, courseId) => {
@@ -16,14 +16,26 @@ export const enrollmentService = {
         courseId,
         course.totalSeats,
       );
-      if (reserved.count === 0) throw conflict("Course is full");
 
-      return enrollmentRepository.create(tx, studentId, courseId);
+      if (reserved.count === 0) {
+        const result = await enrollmentRepository.waitList(
+          tx,
+          studentId,
+          courseId,
+        );
+        return { status: "waitlisted", result };
+      }
+      const enrolled = await enrollmentRepository.create(
+        tx,
+        studentId,
+        courseId,
+      );
+      return { status: "enrolled", result: enrolled };
     });
   },
   delete: (enrollmentId, user) => {
     return prisma.$transaction(async (tx) => {
-      const enrollment = await tx.enrollments.findUnique({
+      const enrollment = await tx.enrollment.findUnique({
         where: { id: enrollmentId },
       });
       if (!enrollment) {
@@ -37,6 +49,11 @@ export const enrollmentService = {
       await courseRepository.releaseSeat(tx, enrollment.courseId);
       await enrollmentRepository.delete(tx, enrollmentId);
       await enrollmentRepository.computeGPA(tx, enrollment.studentId);
+
+      const autoEnrolled = await enrollmentRepository.autoEnroll(tx,enrollment.courseId)
+      
+      return {deleted:true,autoEnrolled}
+      
     });
   },
   update: async (enrollmentId, input) => {

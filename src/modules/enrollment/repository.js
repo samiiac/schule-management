@@ -1,6 +1,7 @@
 import { prisma } from "../../prisma/client.js";
 import { calculateGPA } from "../../utils/gpa.js";
 import { getPagination } from "../../utils/pagination.js";
+import { courseRepository } from "../course/repository.js";
 
 export const enrollmentRepository = {
   create: async (tx, studentId, courseId) => {
@@ -129,5 +130,51 @@ export const enrollmentRepository = {
         gpa,
       },
     });
+  },
+
+  waitList: (tx, studentId, courseId) => {
+    return tx.waitlist.create({ data: { studentId, courseId } });
+  },
+
+  autoEnroll: async (tx, courseId) => {
+    const course = await courseRepository.getCourseInfo(tx, courseId);
+
+    if (!course || !course.isActive) {
+      return null;
+    }
+
+    while (true) {
+      const next = await tx.waitList.findFirst({
+        where: { courseId },
+        orderBy: { createdAt: "asc" },
+      });
+      if (!next) {
+        return null;
+      }
+      const alreadyEnrolled = await tx.enrollment.findFirst({
+        where: { studentId: next.studentId, courseId },
+      });
+      if (alreadyEnrolled) {
+        await tx.waitList.delete({ where: { id: next.id } });
+        continue;
+      }
+      const reserved = await courseRepository.reserveSeat(
+        tx,
+        courseId,
+        course.totalSeats,
+      );
+
+      if (reserved.count == 0) {
+        return null;
+      }
+
+      const enrolled = await enrollmentRepository.create(
+        tx,
+        next.studentId,
+        courseId,
+      );
+      await tx.waitList.delete({ where: { id: next.id } });
+      return enrolled;
+    }
   },
 };

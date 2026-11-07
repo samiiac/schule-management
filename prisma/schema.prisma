@@ -117,3 +117,15 @@ model Enrollment{
   enrolledAt DateTime @default(now())
   @@unique([studentId,courseId])
 } 
+
+model Waitlist {
+  id        String   @id @default(uuid())
+  studentId String
+  courseId  String
+  createdAt DateTime @default(now())
+  student   StudentInfo @relation(fields: [studentId], references: [userId])
+  course    Course      @relation(fields: [courseId], references: [id])
+
+  @@unique([studentId, courseId])   
+  @@index([courseId, createdAt])   
+}

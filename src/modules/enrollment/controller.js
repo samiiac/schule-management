@@ -16,8 +16,11 @@ export const enrollmentController = {
 
     if (!studentId) throw badRequest("studentId is required");
 
-    const result = await enrollmentService.create(studentId, body.courseId);
-    return res.status(201).json({ success: true, result });
+    const { status, result } = await enrollmentService.create(
+      studentId,
+      body.courseId,
+    );
+    return res.status(201).json({ success: true, status, result });
   },
 
   listForAdmin: async (req, res) => {

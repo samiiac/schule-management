@@ -1,4 +1,4 @@
-import { changePassword, unauthorized } from "../utils/appError";
+import { changePassword, unauthorized } from "../utils/appError.js";
 
 export function passwordChange(req, res, next) {
   const user = req.user;
